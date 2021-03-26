@@ -13,7 +13,6 @@ exports.getCourses = asyncHandler(async (req, res, next) => {
   //This has a bug where a valid non existant bootcamp Id yields success with no courses
   if (req.params.bootcampId) {
     const bootcamp = await Bootcamp.findById(req.params.bootcampId)
-    console.log(bootcamp)
     if (!bootcamp) {
       return next(
         new ErrorResponse(

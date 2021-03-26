@@ -85,7 +85,6 @@ exports.getBootcamps = asyncHandler(async (req, res, next) => {
 // @access public
 exports.getBootcamp = asyncHandler(async (req, res, next) => {
   const bootcamp = await Bootcamp.findById(req.params.id)
-  console.log(bootcamp)
   if (!bootcamp) {
     return next(
       new ErrorResponse(
