@@ -5,25 +5,25 @@ const advancedResults = (model, populate) => async (
 ) => {
   let query
 
-  //Copy request.query
-  let reqQuery = { ...req.query }
+  // Copy req.query
+  const reqQuery = { ...req.query }
 
-  // Fields to remove
+  // Fields to exclude
   const removeFields = ['select', 'sort', 'page', 'limit']
 
-  //Loop over removeFields and delete them from reqQuery
+  // Loop over removeFields and delete them from reqQuery
   removeFields.forEach((param) => delete reqQuery[param])
 
-  //Create query String
+  // Create query string
   let queryStr = JSON.stringify(reqQuery)
 
-  //Create operators like gt and gte ...
+  // Create operators ($gt, $gte, etc)
   queryStr = queryStr.replace(
     /\b(gt|gte|lt|lte|in)\b/g,
     (match) => `$${match}`
   )
 
-  //Find resource
+  // Finding resource
   query = model.find(JSON.parse(queryStr))
 
   // Select Fields
@@ -40,24 +40,23 @@ const advancedResults = (model, populate) => async (
     query = query.sort('-createdAt')
   }
 
-  //Pagination
+  // Pagination
   const page = parseInt(req.query.page, 10) || 1
-  const limit = parseInt(req.query.limit, 10) || 10
+  const limit = parseInt(req.query.limit, 10) || 25
   const startIndex = (page - 1) * limit
   const endIndex = page * limit
-  const total = await model.countDocuments()
+  const total = await model.countDocuments(JSON.parse(queryStr))
 
   query = query.skip(startIndex).limit(limit)
 
-  //Populate
   if (populate) {
     query = query.populate(populate)
   }
 
-  //Executing query
+  // Executing query
   const results = await query
 
-  //Pagination result
+  // Pagination result
   const pagination = {}
 
   if (endIndex < total) {
