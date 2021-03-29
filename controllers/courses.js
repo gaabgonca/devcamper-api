@@ -8,33 +8,17 @@ const Bootcamp = require('../models/Bootcamp')
 // @route GET /api/v1/bootcamps/:bootcampId/courses
 // @access public
 exports.getCourses = asyncHandler(async (req, res, next) => {
-  let query
-
   //This has a bug where a valid non existant bootcamp Id yields success with no courses
   if (req.params.bootcampId) {
-    const bootcamp = await Bootcamp.findById(req.params.bootcampId)
-    if (!bootcamp) {
-      return next(
-        new ErrorResponse(
-          `No bootcamp found with id ${req.params.bootcampId}`,
-          404
-        )
-      )
-    }
-    query = Course.find({ bootcamp: req.params.bootcampId })
-  } else {
-    query = Course.find().populate({
-      path: 'bootcamp',
-      select: 'name description',
+    const courses = Course.find({ bootcamp: req.params.bootcampId })
+    return res.status(200).json({
+      success: true,
+      count: courses.length,
+      data: courses,
     })
+  } else {
+    res.status(200).json(res.advancedResults)
   }
-
-  const courses = await query
-  res.status(200).json({
-    success: true,
-    count: courses.length,
-    data: courses,
-  })
 })
 
 // @desc get single course
