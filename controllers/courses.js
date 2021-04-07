@@ -8,9 +8,10 @@ const Bootcamp = require('../models/Bootcamp')
 // @route GET /api/v1/bootcamps/:bootcampId/courses
 // @access public
 exports.getCourses = asyncHandler(async (req, res, next) => {
-  //This has a bug where a valid non existant bootcamp Id yields success with no courses
   if (req.params.bootcampId) {
-    const courses = Course.find({ bootcamp: req.params.bootcampId })
+    const courses = await Course.find({
+      bootcamp: req.params.bootcampId,
+    })
     return res.status(200).json({
       success: true,
       count: courses.length,

@@ -30,11 +30,25 @@ const CourseSchema = new mongoose.Schema({
   bootcamp: {
     type: mongoose.Schema.ObjectId,
     ref: 'Bootcamp',
-    required: true,
   },
 })
 
 CourseSchema.set('timestamps', true)
+
+//Add course to random bootcamp if bootcamp id not provided
+
+CourseSchema.pre('save', async function (next) {
+  if (!this.bootcamp) {
+    const Bootcamps = await this.model('Bootcamp').find()
+    // Select random one
+    const randomBootcamp =
+      Bootcamps[Math.floor(Math.random() * Bootcamps.length)]
+
+    this.bootcamp = randomBootcamp._id
+  }
+
+  next()
+})
 
 //Static method to get average of course tuitions
 CourseSchema.statics.getAverageCost = async function (bootcampId) {
