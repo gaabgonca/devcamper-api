@@ -72,3 +72,7 @@ const sendTokenResponse = (user, statusCode, res) => {
     token,
   })
 }
+
+// @desc Login user
+// @route POST /api/v1/auth/login
+// @access public
