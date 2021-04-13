@@ -89,7 +89,7 @@ exports.resetPassword = asyncHandler(async (req, res, next) => {
   user.resetPasswordToken = undefined
   user.resetPasswordExpire = undefined
 
-  await user.save({ validateBeforeSave: true })
+  await user.save()
 
   sendTokenResponse(user, 200, res)
 })
@@ -116,7 +116,9 @@ exports.forgotPassword = asyncHandler(async (req, res, next) => {
     'host'
   )}/api/v1/auth/resetpassword/${resetToken}`
 
-  const message = `You are receiving this email because you (or someone else) has requested the reset of a password. Please make a PUT request to: \n\n ${resetUrl}`
+  const message =
+    `You are receiving this email because you (or someone else) has requested the reset of a password. Please make a PUT request to: \n\n ${resetUrl}` +
+    `\n\n Reset token: ${resetToken}`
 
   try {
     await sendEmail({
@@ -137,11 +139,6 @@ exports.forgotPassword = asyncHandler(async (req, res, next) => {
 
     return next(new ErrorResponse('Email could not be sent', 500))
   }
-
-  res.status(200).json({
-    success: true,
-    data: user,
-  })
 })
 
 //Get token from model, create cookie and send response

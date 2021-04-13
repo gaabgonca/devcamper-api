@@ -40,11 +40,6 @@ UserSchema.pre('save', async function (next) {
     next()
   }
 
-  const isValid = await this.validate()
-  if (!isValid) {
-    next()
-  }
-
   const salt = await bcrypt.genSalt(10)
   this.password = await bcrypt.hash(this.password, salt)
 })
