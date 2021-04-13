@@ -2,6 +2,7 @@ const crypto = require('crypto')
 const mongoose = require('mongoose')
 const bcrypt = require('bcryptjs')
 const jwt = require('jsonwebtoken')
+const ErrorResponse = require('../utils/errorResponse')
 
 const UserSchema = new mongoose.Schema({
   name: {
@@ -26,7 +27,7 @@ const UserSchema = new mongoose.Schema({
     type: String,
     required: [true, 'Please add a password'],
     minlenght: 6,
-    select: false,
+    // select: false,
   },
   resetPasswordToken: String,
   resetPasswordExpire: Date,
@@ -34,10 +35,19 @@ const UserSchema = new mongoose.Schema({
 
 UserSchema.set('timestamps', true)
 
-//Encrypt password using bcrypt
+// Encrypt password using bcrypt
 UserSchema.pre('save', async function (next) {
   if (!this.isModified('password')) {
     next()
+  } else {
+    if (this.password.length < 6) {
+      return next(
+        new ErrorResponse(
+          'Password should be at least 6 characters',
+          401
+        )
+      )
+    }
   }
 
   const salt = await bcrypt.genSalt(10)
