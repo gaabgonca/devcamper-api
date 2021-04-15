@@ -49,7 +49,8 @@ app.use(fileupload())
 
 // Set static folder
 
-app.use(express.static(path.join(__dirname, 'public')))
+// app.use(express.static(path.join(__dirname, 'public')))
+app.use(express.static('public'))
 
 //Sanitize inputs
 app.use(mongoSanitize())
